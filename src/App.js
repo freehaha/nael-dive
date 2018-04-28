@@ -184,7 +184,7 @@ class App extends Component {
         .map(s => parseInt(s, 10))
         .forEach((i) => {
           if (isNaN(i)) return
-          if (i < 0 || i > 8) return
+          if (i < 0 || i >=8) return
           this.clocks[i]._sel = true
           this.clocks[i].fill(SELECTED_CLOCK)
         })
