@@ -294,7 +294,7 @@ class App extends Component {
     this.updateDive()
   }
   random () {
-    const idx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    const idx = [0, 1, 2, 3, 4, 5, 6, 7]
     const result = idx.map(n => { return [n, Math.random()] }).sort((a, b) => {
       return a[1] > b[1]
     })
