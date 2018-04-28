@@ -51,13 +51,13 @@ class App extends Component {
       strokeWidth: 2
     })
     layer.add(arena)
-    for (var i = 0; i < 12; ++i) {
+    for (var i = 0; i < 8; ++i) {
       var clock = new Konva.Circle({
         x: this.stage.getWidth() / 2,
         y: this.stage.getHeight() / 2,
         offsetY: this.stage.getHeight() / 4,
         offsetX: this.stage.getHeight() / 4,
-        rotation: 30 * i + 45,
+        rotation: 45 * i + 45,
         radius: DRAGON_RADIUS,
         fill: NORMAL_CLOCK,
         stroke: 'black',
@@ -221,8 +221,8 @@ class App extends Component {
       height: STAGE_HEIGHT
     })
     this.clockpos = []
-    for (var i = 0; i < 12; i++) {
-      const rad = (i * 30) / 180 * Math.PI
+    for (var i = 0; i < 8; i++) {
+      const rad = (i * 45) / 180 * Math.PI
       this.clockpos.push({
         x: (ARENA_RADIUS + DRAGON_RADIUS * 2 + 2) * Math.sin(rad) + STAGE_WIDTH / 2,
         y: -(ARENA_RADIUS + DRAGON_RADIUS * 2 + 2) * Math.cos(rad) + STAGE_HEIGHT / 2
@@ -236,7 +236,7 @@ class App extends Component {
   updateDive () {
     var count = 0
     var dragons = []
-    for (var i = 0; i < 12; ++i) {
+    for (var i = 0; i < 8; ++i) {
       if (this.clocks[i]._sel) {
         dragons.push(this.clockpos[i])
         count++
@@ -314,7 +314,7 @@ class App extends Component {
       return `${c[0]}=[${pos.x}, ${pos.y}]`
     }).join('&')
     var d = []
-    for (var i = 0; i < 12; ++i) {
+    for (var i = 0; i < 8; ++i) {
       if (this.clocks[i]._sel) {
         d.push(i)
       }
