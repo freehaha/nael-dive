@@ -2,14 +2,31 @@
 	padding: 30px;
 }
 #arena {
+	float: left;
 	width: 600px;
 	border: 1px solid grey;
 	margin-bottom: 5px;
+	margin-right: 10px;
+}
+#params {
+	float: left;
+}
+
+.clearfix:before,
+.clearfix:after {
+  content: "";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}
+.clearfix {
+  zoom: 1; /* For IE 6/7 (trigger hasLayout) */
 }
 button {
 	margin-right: 5px;
 }
-input {
+input.hash {
 	margin-top: 10px;
 	width: 600px;
 }

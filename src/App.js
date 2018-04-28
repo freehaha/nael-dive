@@ -11,18 +11,34 @@ const MARK_RADIUS = 10
 const MARK_COLORS = ['rgb(249, 29, 73)', 'rgb(242, 239, 72)', 'rgb(112, 231, 255)']
 const STAGE_HEIGHT = 600
 const STAGE_WIDTH = 600
-const DIVE_WIDTH = 100
+const DIVE_WIDTH = 110
 const DIVE_COLOR = 'rgba(225, 178, 255, 0.6)'
 class App extends Component {
   constructor (props) {
     super(props)
     this.clocks = []
     this.marks = []
+    this.dives = []
     this.random = this.random.bind(this)
     this.reset = this.reset.bind(this)
     this.export = this.export.bind(this)
+    this.update = this.update.bind(this)
     this.locationHashChanged = this.locationHashChanged.bind(this)
-    this.state = {hash: window.location}
+    this.state = {
+      hash: window.location,
+      diveWidth: DIVE_WIDTH,
+    }
+  }
+  update() {
+    var dWidth = parseInt(this.state.diveWidth) || DIVE_WIDTH
+    this.setState({
+      diveWidth: dWidth
+    })
+    for(var d of this.dives) {
+        d.offsetX(dWidth / 2)
+        d.width(dWidth)
+    }
+    this.redraw()
   }
   parseHash () {
     var hash = window.location.hash.substr(1)
@@ -146,13 +162,12 @@ class App extends Component {
   initDive () {
     var layer = new Konva.Layer()
     this.stage.add(layer)
-    this.dives = []
     for (var i = 0; i < 5; i++) {
       var rect = new Konva.Rect({
         x: 0,
         y: 0,
-        offsetX: DIVE_WIDTH / 2,
-        width: DIVE_WIDTH,
+        offsetX: this.state.diveWidth / 2,
+        width: this.state.diveWidth,
         height: ARENA_RADIUS * 2 + DRAGON_RADIUS * 4,
         strokeWidth: 1,
         stroke: 'black',
@@ -327,10 +342,17 @@ class App extends Component {
       <div className="App">
         <div id="arena">
         </div>
+        <div id="params">
+          <div>
+            Dive Width <input value={this.state.diveWidth} onChange={(e) => this.setState({diveWidth: e.target.value})}/>
+          </div>
+          <button style={{marginTop: "10px"}} onClick={this.update}>Update</button>
+        </div>
+        <div className="clearfix"></div>
         <button onClick={this.reset}>reset</button>
         <button onClick={this.random}>random dragon</button>
         <button onClick={this.export}>export</button><br />
-        <input value={this.state.hash} onChange={(e) => this.setState({hash: e.target.value})}/>
+        <input className="hash" value={this.state.hash} onChange={(e) => this.setState({hash: e.target.value})}/>
       </div>
     )
   }
