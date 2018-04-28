@@ -183,7 +183,6 @@ class App extends Component {
       setting.d.split(',')
         .map(s => parseInt(s, 10))
         .forEach((i) => {
-          console.log(i)
           if (isNaN(i)) return
           if (i < 0 || i > 11) return
           this.clocks[i]._sel = true
@@ -201,7 +200,7 @@ class App extends Component {
           })
         } catch (e) {
           this.marks[c[1]].position({
-            x: 300 + c[1] + MARK_RADIUS * 2,
+            x: 300 + c[1] * MARK_RADIUS * 2,
             y: 300
           })
         }
@@ -320,7 +319,7 @@ class App extends Component {
         d.push(i)
       }
     }
-    var url = encodeURI(`${window.location.origin}${window.location.pathname}#?${marks}&d=${d.join(',')}`)
+    var url = encodeURI(`${window.location.origin}${window.location.pathname}#${marks}&d=${d.join(',')}`)
     this.setState({hash: url})
   }
   render () {
