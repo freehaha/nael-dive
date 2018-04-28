@@ -320,7 +320,7 @@ class App extends Component {
         d.push(i)
       }
     }
-    var url = encodeURI(`${window.location.origin}/#?${marks}&d=${d.join(',')}`)
+    var url = encodeURI(`${window.location.origin}${window.location.pathname}#?${marks}&d=${d.join(',')}`)
     this.setState({hash: url})
   }
   render () {

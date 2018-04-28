@@ -2,6 +2,9 @@
 	padding: 30px;
 }
 #arena {
+	width: 600px;
+	border: 1px solid grey;
+	margin-bottom: 5px;
 }
 button {
 	margin-right: 5px;
