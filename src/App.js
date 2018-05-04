@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Konva from 'konva'
 import './App.css'
+import CopyToClipboard from 'react-copy-to-clipboard'
 
 const SELECTED_CLOCK = 'rgba(180, 0, 30, 0.9)'
 const HOVER_CLOCK = 'rgba(180, 0, 30, 0.5)'
@@ -26,17 +27,17 @@ class App extends Component {
     this.locationHashChanged = this.locationHashChanged.bind(this)
     this.state = {
       hash: window.location,
-      diveWidth: DIVE_WIDTH,
+      diveWidth: DIVE_WIDTH
     }
   }
-  update() {
+  update () {
     var dWidth = parseInt(this.state.diveWidth) || DIVE_WIDTH
     this.setState({
       diveWidth: dWidth
     })
-    for(var d of this.dives) {
-        d.offsetX(dWidth / 2)
-        d.width(dWidth)
+    for (var d of this.dives) {
+      d.offsetX(dWidth / 2)
+      d.width(dWidth)
     }
     this.redraw()
   }
@@ -188,18 +189,56 @@ class App extends Component {
     this.redraw()
     this.updateDive()
   }
+  hex2Pos (hex) {
+    var n = parseInt(hex, 16)
+    var x = (n >> 12)
+    var y = (n & 0xfff)
+    if (x < STAGE_WIDTH / 2 - ARENA_RADIUS ||
+      x > STAGE_WIDTH / 2 + ARENA_RADIUS ||
+      y < STAGE_HEIGHT / 2 - ARENA_RADIUS ||
+      y > STAGE_HEIGHT / 2 + ARENA_RADIUS) {
+      return [300, 300]
+    }
+    return [x, y]
+  }
   loadHashSetting () {
     var setting = this.parseHash()
     for (var c of this.clocks) {
       c._sel = false
       c.fill(NORMAL_CLOCK)
     }
+    if (setting.s) {
+      var s = setting.s
+      var pos = parseInt(s.substring(0, 2), 16)
+      var d = []
+      for (var i = 0; i < 8; ++i) {
+        if (pos & (1 << i)) {
+          d.push(i.toString())
+        }
+      }
+      setting.d = d.join(',')
+      try {
+        setting.a = JSON.stringify(this.hex2Pos(s.substr(2, 6)))
+      } catch (e) {
+        setting.a = '[290, 300]'
+      }
+      try {
+        setting.b = JSON.stringify(this.hex2Pos(s.substr(8, 6)))
+      } catch (e) {
+        setting.b = '[300, 300]'
+      }
+      try {
+        setting.c = JSON.stringify(this.hex2Pos(s.substr(14, 6)))
+      } catch (e) {
+        setting.c = '[310, 300]'
+      }
+    }
     if (setting.d) {
       setting.d.split(',')
         .map(s => parseInt(s, 10))
         .forEach((i) => {
           if (isNaN(i)) return
-          if (i < 0 || i >=8) return
+          if (i < 0 || i >= 8) return
           this.clocks[i]._sel = true
           this.clocks[i].fill(SELECTED_CLOCK)
         })
@@ -322,19 +361,43 @@ class App extends Component {
     this.redraw()
     this.updateDive()
   }
+  toHex (num) {
+    var hex = num.toString(16)
+    while (hex.length < 3) {
+      hex = '0' + hex
+    }
+    return hex
+  }
+  parseHex (hex) {
+    var x = 0
+    var y = 0
+
+    return {
+      x: x,
+      y: y
+    }
+  }
   export () {
     var conf = [['a', 0], ['b', 1], ['c', 2]]
-    var marks = conf.map((c) => {
+    var poshex = ''
+    conf.forEach((c) => {
       var pos = this.marks[c[1]].position()
-      return `${c[0]}=[${pos.x}, ${pos.y}]`
-    }).join('&')
+      poshex += this.toHex(pos.x) + this.toHex(pos.y)
+    })
     var d = []
+    var clock = 0
     for (var i = 0; i < 8; ++i) {
       if (this.clocks[i]._sel) {
         d.push(i)
+        clock |= 1 << i
       }
     }
-    var url = encodeURI(`${window.location.origin}${window.location.pathname}#${marks}&d=${d.join(',')}`)
+    var sstr = clock.toString(16)
+    if (sstr.length < 2) {
+      sstr = '0' + sstr
+    }
+    var url = encodeURI(`${window.location.origin}${window.location.pathname}#s=${sstr}${poshex}`)
+    window.location.hash = `#s=${sstr}${poshex}`
     this.setState({hash: url})
   }
   render () {
@@ -346,13 +409,15 @@ class App extends Component {
           <div>
             Dive Width <input value={this.state.diveWidth} onChange={(e) => this.setState({diveWidth: e.target.value})}/>
           </div>
-          <button style={{marginTop: "10px"}} onClick={this.update}>Update</button>
+          <button style={{marginTop: '10px'}} onClick={this.update}>Update</button>
         </div>
         <div className="clearfix"></div>
         <button onClick={this.reset}>reset</button>
         <button onClick={this.random}>random dragon</button>
-        <button onClick={this.export}>export</button><br />
-        <input className="hash" value={this.state.hash} onChange={(e) => this.setState({hash: e.target.value})}/>
+        <CopyToClipboard text={this.state.hash}>
+          <button onClick={this.export}>export</button>
+        </CopyToClipboard><br />
+        <input className="hash" value={this.state.hash}/>
       </div>
     )
   }
