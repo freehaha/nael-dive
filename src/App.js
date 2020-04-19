@@ -376,7 +376,6 @@ class App extends Component {
       .sort((a, b) => {
         return a[1] - b[1];
       });
-    console.log(result);
     this.reset();
     for (var i = 0; i < 5; i++) {
       var d = result[i][0];
